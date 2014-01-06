@@ -3,7 +3,7 @@
 import os
 
 from gi.repository import Gtk, GObject, Pango, GdkPixbuf, GLib
-from IPython.testing.decorators import make_label_dec
+# from IPython.testing.decorators import make_label_dec
 from gi.repository.GdkPixbuf import Pixbuf
 
 from lutris.downloader import Downloader
