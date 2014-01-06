@@ -59,6 +59,7 @@ class wine(Runner):
     '''Run Windows games with Wine'''
     executable = 'wine'
     platform = 'Windows'
+    architecture = 'win32'
     game_options = [
         {
             'option': 'exe',
@@ -94,6 +95,8 @@ class wine(Runner):
                          ('Jack', 'jack')]
         desktop_choices = [('Yes', 'Default'),
                            ('No', 'None')]
+        architecture_choices = [('32 bit', 'win32'),
+                                ('64 bit', 'win64')]
         self.runner_options = [
             {
                 'option': 'wine_path',
@@ -147,6 +150,12 @@ class wine(Runner):
                 'label': 'Virtual desktop',
                 'type': 'one_choice',
                 'choices': desktop_choices
+            },
+            {
+                'option': 'architecture',
+                'label': 'Architecture',
+                'type': 'one_choice',
+                'choices': architecture_choices
             }
         ]
         self.settings = settings or {}
@@ -175,6 +184,12 @@ class wine(Runner):
         if runner_name in self.settings.config:
             return self.settings[runner_name].get('wine_path', self.executable)
         return self.executable
+
+    def get_wine_arch(self):
+        runner_name = self.__class__.__name__
+        if runner_name in self.settings.config:
+            return self.settings[runner_name].get('architecture', self.architecture)
+        return self.architecture
 
     @classmethod
     def msi_exec(cls, msi_file, quiet=False, prefix=None):
@@ -205,6 +220,9 @@ class wine(Runner):
         prefix = self.settings['game'].get('prefix', "")
         if os.path.exists(prefix):
             command.append("WINEPREFIX=\"%s\" " % prefix)
+
+        winearch = self.get_wine_arch()
+        command.append("WINEARCH=\"%s\" " % winearch)
 
         self.game_path = os.path.dirname(game_exe)
         game_exe = os.path.basename(game_exe)
